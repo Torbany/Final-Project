@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fraud Detection System</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f0f2f5;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        .card {
+            margin-top: 20px;
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .card-body {
+            padding: 30px;
+        }
+        .result {
+            font-size: 1.5em;
+            margin-top: 20px;
+        }
+        .result-fraud {
+            color: red;
+        }
+        .result-not-fraud {
+            color: green;
+        }
+        .instructions {
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+        .form-group label {
+            font-weight: bold;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #004085;
+        }
+    </style>
+    <script>
+        function populateFeatures() {
+            var features = document.getElementById("predefinedTransactions").value;
+            document.getElementById("features").value = features;
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-body">
+                <h1 class="card-title text-center">Fraud Detection System</h1>
+                <p class="card-text text-center">
+                    This project uses a machine learning model to predict whether a given transaction is fraudulent or not based on its features. Enter the transaction features as a comma-separated list and click "Predict" to see the result.
+                </p>
+                <form action="/predict" method="post" class="mt-4">
+                    <div class="form-group">
+                        <label for="predefinedTransactions">Select a Predefined Transaction</label>
+                        <select class="form-control" id="predefinedTransactions" onchange="populateFeatures(this.value)">
+                            <option value="">-- Select a Transaction --</option>
+                            <optgroup label="Fraudulent Transactions">
+                                {% for transaction in fraudulent_transactions %}
+                                    <option value="{{ transaction|join(', ') }}">{{ loop.index }}. Fraudulent Transaction</option>
+                                {% endfor %}
+                            </optgroup>
+                            <optgroup label="Non-Fraudulent Transactions">
+                                {% for transaction in non_fraudulent_transactions %}
+                                    <option value="{{ transaction|join(', ') }}">{{ loop.index }}. Non-Fraudulent Transaction</option>
+                                {% endfor %}
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="features">Or Enter Transaction Features (comma-separated)</label>
+                        <textarea class="form-control" id="features" name="features" rows="3" placeholder="Enter 30 comma-separated features"></textarea>
+                    </div>
+                    <p class="instructions">
+                        Instructions: Enter 30 comma-separated values corresponding to the transaction features. You can also select a predefined transaction from the dropdown menu.
+                    </p>
+                    <button type="submit" class="btn btn-primary btn-block">Predict</button>
+                </form>
+                {% if prediction is not none %}
+                    <div class="result mt-4 text-center {{ 'result-fraud' if prediction == 'Fraud' else 'result-not-fraud' }}">
+                        <strong>Prediction:</strong> {{ prediction }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
